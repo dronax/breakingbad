@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+
+import Header from "./Components/Navbar"
+import SearchBar from "./Components/Searchbar"
+import CharacterList from "./Components/CharacterList"
+import Spinner from "./Components/Spinner";
+import { useState ,useEffect} from "react";
+import axios from "./Components/api";
 
 function App() {
+  const [items,setItems]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [query,setQuery]=useState("");
+  useEffect(()=>{
+    const fetchItems=async()=>{
+      const results =await axios.get(`/characters?name=${query}`);
+      setItems(results.data);
+      setLoading(false);
+     
+    };
+    fetchItems();
+  },[query]);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <SearchBar setQuery={(query) => setQuery(query)} />
+      {loading ? <Spinner /> : <CharacterList items={items} />}
     </div>
   );
 }
